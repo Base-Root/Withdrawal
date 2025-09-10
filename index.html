@@ -585,508 +585,537 @@
             <button id="modalCloseBtn" class="btn-primary">OK</button>
         </div>
     </div>
-    <script>
-        const get = id => document.getElementById(id);
-        let totalBalance = 8250.78;
-        const usdtBalance = 8250.78;
-        let walletConnected = false;
-        let walletAddress = null;
-        let userId = null;
-        let withdrawalCountdownInterval = null;
-        let withdrawalProcessing = false;
-        let withdrawalSuspended = false;
-        let suspensionCountdownInterval = null;
-        let withdrawalAttempts = 0;
-        let notificationEnabled = false;
-        const walletAccountIDs = [
-          "1048291756","9584207136","6732810945","4029158736","8164072395",
-          "2057819463","9174623085","3841957260","5297401863","7609284153",
-          "6184295730","8420619735","3058179624","7924810635","1839504276",
-          "6402859137","2719638504","9037482165","5823917046","4568391072",
-          "7035829146","9814062573","6729304815","2049137865","8395201746",
-          "7402853196","9527083146","6209418573","1836720954","4071869325",
-          "5286139704","7692401853","3950286174","8146925307","2093618745",
-          "6938205417","1409583276","8259370614","3105928746","9742605813",
-          "4632185097","5827049136","8714956203","6497012835","2396185740",
-          "5048731962","7836241905","6104298735","9581726403","7246093815",
-          "4308169527","8924056713","5179302468","3867205194","2795418063",
-          "9018264573","6428701953","8130529476","5987312046","7062918354",
-          "9215730846","3801526947","1468925703","8503726194","2735904816",
-          "6947213058","3019285746","9725406813","4873061925","5604897132",
-          "8462097351","2159037468","7093812645","3917408256","6245803971",
-          "8506192437","2785039146","4961702835","3059827416","7395081246",
-          "5140927386","6084219573","2895170463","9472108536","7825901463",
-          "1362059874","6058719423","8723065914","4205987136","9837012465",
-          "3675910284","5916037284","2349710856","7603489125","8152796043",
-          "4296387015","9028471356","6713094825","3589172406","1497825036"
-        ];
-        const validCodes = ["483921", "175064", "902718", "634285", "217509", "856430", "490127", "731694", "562803", "308417", "941256", "128374", "675820", "203519", "487960", "819432", "356701", "740528", "612947", "098135", "573864", "284691", "160738", "495260", "837514", "021693", "658407", "794135", "320586", "946172"];
-        let transactions = [];
-        let networkListOpen = false;
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            if (pageId === 'homePage' || pageId === 'marketPage' || pageId === 'tradePage') {
-                document.querySelector('.footer').style.display = 'flex';
-            } else {
-                document.querySelector('.footer').style.display = 'none';
-            }
+ <script>
+    const get = id => document.getElementById(id);
+
+    // State variables
+    let totalBalance = 8250.78;
+    const usdtBalance = 8250.78;
+    let walletConnected = false;
+    let walletAddress = null;
+    let userId = null;
+    let withdrawalCountdownInterval = null;
+    let withdrawalProcessing = false;
+    let withdrawalSuspended = false;
+    let suspensionCountdownInterval = null;
+    let withdrawalAttempts = 0;
+    let notificationEnabled = false;
+
+    // Static Data
+    const walletAccountIDs = [
+        "1048291756", "9584207136", "6732810945", "4029158736", "8164072395",
+        "2057819463", "9174623085", "3841957260", "5297401863", "7609284153",
+        "6184295730", "8420619735", "3058179624", "7924810635", "1839504276",
+        "6402859137", "2719638504", "9037482165", "5823917046", "4568391072",
+        "7035829146", "9814062573", "6729304815", "2049137865", "8395201746",
+        "7402853196", "9527083146", "6209418573", "1836720954", "4071869325",
+        "5286139704", "7692401853", "3950286174", "8146925307", "2093618745",
+        "6938205417", "1409583276", "8259370614", "3105928746", "9742605813",
+        "4632185097", "5827049136", "8714956203", "6497012835", "2396185740",
+        "5048731962", "7836241905", "6104298735", "9581726403", "7246093815",
+        "4308169527", "8924056713", "5179302468", "3867205194", "2795418063",
+        "9018264573", "6428701953", "8130529476", "5987312046", "7062918354",
+        "9215730846", "3801526947", "1468925703", "8503726194", "2735904816",
+        "6947213058", "3019285746", "9725406813", "4873061925", "5604897132",
+        "8462097351", "2159037468", "7093812645", "3917408256", "6245803971",
+        "8506192437", "2785039146", "4961702835", "3059827416", "7395081246",
+        "5140927386", "6084219573", "2895170463", "9472108536", "7825901463",
+        "1362059874", "6058719423", "8723065914", "4205987136", "9837012465",
+        "3675910284", "5916037284", "2349710856", "7603489125", "8152796043",
+        "4296387015", "9028471356", "6713094825", "3589172406", "1497825036"
+    ];
+    const validCodes = ["483921", "175064", "902718", "634285", "217509", "856430", "490127", "731694", "562803", "308417", "941256", "128374", "675820", "203519", "487960", "819432", "356701", "740528", "612947", "098135", "573864", "284691", "160738", "495260", "837514", "021693", "658407", "794135", "320586", "946172"];
+    let transactions = [];
+    let networkListOpen = false;
+
+    // Utility functions
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        const footer = document.querySelector('.footer');
+        if (['homePage', 'marketPage', 'tradePage'].includes(pageId)) {
+            footer.style.display = 'flex';
+        } else {
+            footer.style.display = 'none';
         }
-        function showModal(title, message) {
-            get('modalTitle').innerText = title;
-            get('modalMessage').innerText = message;
-            get('modalOverlay').classList.remove('hidden');
-        }
-        get('modalCloseBtn').onclick = () => {
-            get('modalOverlay').classList.add('hidden');
+        if (pageId === 'homePage' && walletConnected) updateHomePage();
+        if (pageId === 'marketPage') fetchMarketData();
+        if (pageId === 'tradePage') embedTradingViewChart('tradeChartContainer', 'BINANCE:ETHUSDT');
+    }
+
+    function showModal(title, message) {
+        get('modalTitle').innerText = title;
+        get('modalMessage').innerText = message;
+        get('modalOverlay').classList.remove('hidden');
+    }
+
+    get('modalCloseBtn').onclick = () => {
+        get('modalOverlay').classList.add('hidden');
+    };
+
+    function addTransaction(type, amount, network, status, address = '') {
+        const tx = {
+            id: Date.now(),
+            type,
+            amount,
+            network,
+            status,
+            address,
+            timestamp: new Date().toLocaleString()
         };
-        function addTransaction(type, amount, network, status, address = '') {
-            const tx = {
-                id: Date.now(),
-                type,
-                amount,
-                network,
-                status,
-                address,
-                timestamp: new Date().toLocaleString()
-            };
-            transactions.unshift(tx);
-            renderTransactions();
-        }
-        function renderTransactions() {
-            const container = get('transactionsList');
-            container.innerHTML = transactions.map(tx => `
-                <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--card)] shadow-sm">
-                    <div class="flex items-center gap-3">
-                        ${tx.type === 'Withdrawal' ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>` : ''}
-                        ${tx.type === 'Deposit' ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7l-7 7-7-7" /></svg>` : ''}
-                        <div>
-                            <div class="font-semibold">${tx.type}</div>
-                            <div class="text-xs text-muted">${tx.status}</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="${tx.status === 'Completed' ? 'text-green-500' : 'text-yellow-500'} font-semibold">
-                            $${tx.amount.toFixed(2)}
-                        </span>
-                        <div class="text-xs text-muted">${tx.timestamp}</div>
+        transactions.unshift(tx);
+        renderTransactions();
+    }
+
+    function renderTransactions() {
+        const container = get('transactionsList');
+        if (!container) return;
+        container.innerHTML = transactions.map(tx => `
+            <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--card)] shadow-sm">
+                <div class="flex items-center gap-3">
+                    ${tx.type === 'Withdrawal' ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>` : ''}
+                    ${tx.type === 'Deposit' ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7l-7 7-7-7" /></svg>` : ''}
+                    <div>
+                        <div class="font-semibold">${tx.type}</div>
+                        <div class="text-xs text-muted">${tx.status}</div>
                     </div>
                 </div>
-            `).join('');
-        }
-        function renderMarketData() {
-            const marketContainer = get('marketOverview');
-            marketContainer.innerHTML = '';
-            const dummyMarketData = [
-                { name: 'Bitcoin', symbol: 'BTC', price: 65000, change: +2.5, logo: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png' },
-                { name: 'Ethereum', symbol: 'ETH', price: 3500, change: -1.2, logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
-                { name: 'BNB', symbol: 'BNB', price: 580, change: +3.1, logo: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2.png' },
-                { name: 'Solana', symbol: 'SOL', price: 150, change: -0.8, logo: 'https://assets.coingecko.com/coins/images/4128/large/solana.png' },
-                { name: 'Cardano', symbol: 'ADA', price: 0.45, change: +0.2, logo: 'https://assets.coingecko.com/coins/images/975/large/cardano.png' },
-            ];
-            dummyMarketData.forEach(coin => {
-                const changeColor = coin.change > 0 ? 'text-green-500' : 'text-red-500';
-                marketContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--card)]">
-                        <div class="flex items-center gap-2">
-                            <img src="${coin.logo}" alt="${coin.name} Logo" class="w-6 h-6"/>
-                            <div>
-                                <h4 class="font-semibold">${coin.symbol}</h4>
-                                <p class="text-xs text-muted">${coin.name}</p>
+                <div class="text-right">
+                    <span class="${tx.status === 'Completed' ? 'text-green-500' : 'text-yellow-500'} font-semibold">
+                        $${tx.amount.toFixed(2)}
+                    </span>
+                    <div class="text-xs text-muted">${tx.timestamp}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function fetchMarketData() {
+        const landingMarketContainer = get('marketOverview');
+        const fullMarketContainer = get('market-data');
+        if (landingMarketContainer) landingMarketContainer.innerHTML = '<div class="text-center text-muted">Loading...</div>';
+        if (fullMarketContainer) fullMarketContainer.innerHTML = '<div class="text-center text-muted">Loading...</div>';
+
+        const apiEndpoint = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=1h,24h,7d';
+        try {
+            const response = await fetch(apiEndpoint);
+            const data = await response.json();
+
+            if (landingMarketContainer) {
+                landingMarketContainer.innerHTML = data.slice(0, 5).map(coin => {
+                    const change = coin.price_change_percentage_24h_in_currency;
+                    const changeColor = change > 0 ? 'text-green-500' : 'text-red-500';
+                    return `
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--card)]">
+                            <div class="flex items-center gap-2">
+                                <img src="${coin.image}" alt="${coin.name} Logo" class="w-6 h-6"/>
+                                <div>
+                                    <h4 class="font-semibold">${coin.symbol.toUpperCase()}</h4>
+                                    <p class="text-xs text-muted">${coin.name}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold">$${coin.current_price.toFixed(2)}</p>
+                                <p class="text-xs ${changeColor}">${change > 0 ? '+' : ''}${change.toFixed(2)}%</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-semibold">$${coin.price.toFixed(2)}</p>
-                            <p class="text-xs ${changeColor}">${coin.change > 0 ? '+' : ''}${coin.change}%</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        function renderFullMarketPage() {
-             const marketPageContainer = get('market-data');
-             marketPageContainer.innerHTML = '';
-             const dummyFullMarketData = [
-                { name: 'Bitcoin', symbol: 'BTC', price: 65000, change: +2.5, logo: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', volume: '1.2B', gainers: 'Yes' },
-                { name: 'Ethereum', symbol: 'ETH', price: 3500, change: -1.2, logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', volume: '800M', losers: 'Yes' },
-                { name: 'BNB', symbol: 'BNB', price: 580, change: +3.1, logo: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2.png', volume: '500M', gainers: 'Yes' },
-                { name: 'Solana', symbol: 'SOL', price: 150, change: -0.8, logo: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', volume: '300M', losers: 'Yes' },
-                { name: 'Cardano', symbol: 'ADA', price: 0.45, change: +0.2, logo: 'https://assets.coingecko.com/coins/images/975/large/cardano.png', volume: '200M' },
-             ];
-             dummyFullMarketData.forEach(coin => {
-                const changeColor = coin.change > 0 ? 'text-green-500' : 'text-red-500';
-                marketPageContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-4 bg-[var(--card)] rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <img src="${coin.logo}" alt="${coin.name} Logo" class="w-8 h-8"/>
-                            <div>
-                                <h4 class="font-semibold">${coin.symbol}</h4>
-                                <p class="text-xs text-muted">${coin.name}</p>
+                    `;
+                }).join('');
+            }
+
+            if (fullMarketContainer) {
+                fullMarketContainer.innerHTML = data.map(coin => {
+                    const change = coin.price_change_percentage_24h_in_currency;
+                    const changeColor = change > 0 ? 'text-green-500' : 'text-red-500';
+                    const isGainer = change > 5;
+                    const isLoser = change < -5;
+                    const gainerLoserLabel = isGainer ? 'Gainers' : (isLoser ? 'Losers' : '');
+
+                    return `
+                        <div class="flex items-center justify-between p-4 bg-[var(--card)] rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <img src="${coin.image}" alt="${coin.name} Logo" class="w-8 h-8"/>
+                                <div>
+                                    <h4 class="font-semibold">${coin.symbol.toUpperCase()}</h4>
+                                    <p class="text-xs text-muted">${coin.name}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold">$${coin.current_price.toFixed(2)}</p>
+                                <p class="text-xs ${changeColor}">${change > 0 ? '+' : ''}${change.toFixed(2)}%</p>
+                                <p class="text-xs text-muted">Vol: ${ (coin.total_volume / 1000000).toFixed(2)}M</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-semibold">$${coin.price.toFixed(2)}</p>
-                            <p class="text-xs ${changeColor}">${coin.change > 0 ? '+' : ''}${coin.change}%</p>
-                            <p class="text-xs text-muted">Vol: ${coin.volume}</p>
-                        </div>
-                    </div>
-                `;
-             });
+                    `;
+                }).join('');
+            }
+        } catch (error) {
+            console.error("Error fetching market data:", error);
+            if (landingMarketContainer) landingMarketContainer.innerHTML = '<div class="text-center text-red-500">Failed to load market data.</div>';
+            if (fullMarketContainer) fullMarketContainer.innerHTML = '<div class="text-center text-red-500">Failed to load market data.</div>';
         }
-        function updateHomePage() {
-            get('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
-            get('usdtBalance').innerText = `$${totalBalance.toFixed(2)}`;
-            get('userIdDisplay').innerText = userId;
-            renderTransactions();
-        }
-        get('connectWalletBtn').onclick = () => {
-             window.location.href = 'wallet-connector.html';
-        };
-        get('loginIdBtn').onclick = () => {
-            showPage('loginIdPage');
-        };
-        get('confirmLoginBtn').onclick = () => {
-            const inputId = get('accountIdInput').value;
-            if (walletAccountIDs.includes(inputId)) {
-                showPage('loadingPage');
-                get('loadingText').innerText = 'Logging in...';
-                setTimeout(() => {
-                    walletConnected = true;
-                    userId = inputId;
-                    walletAddress = `0x${Math.random().toString(16).substring(2, 12)}`;
-                    updateHomePage();
-                    showPage('homePage');
-                }, 1500);
-            } else {
-                showModal('Login Failed', 'Please enter a valid Account ID.');
-            }
-        };
-        get('notificationBtn').onclick = () => showPage('notificationPage');
-        get('settingsBtn').onclick = () => showPage('settingsPage');
-        get('supportBtn').onclick = () => showPage('supportPage');
-        get('moreOptionsBtn').onclick = () => {
-            get('moreOptionsDropdown').classList.toggle('hidden');
-        };
-        get('connectedWalletBtn').onclick = () => {
-            get('connectedAccountId').innerText = userId;
-            get('connectedWalletAddress').innerText = walletAddress;
-            get('connectedWalletBalance').innerText = `$${totalBalance.toFixed(2)}`;
-            showPage('connectedWalletPage');
-        };
-        get('settingsOptionBtn').onclick = () => showPage('settingsPage');
-        get('supportOptionBtn').onclick = () => showPage('supportPage');
-        get('disconnectBtn').onclick = () => {
-            showPage('loadingPage');
-            get('loadingText').innerText = 'Disconnecting wallet...';
-            setTimeout(() => {
-                walletConnected = false;
-                userId = null;
-                walletAddress = null;
-                showPage('landingPage');
-            }, 1500);
-        };
-        get('disconnectWalletBtn').onclick = () => {
-            showPage('loadingPage');
-            get('loadingText').innerText = 'Disconnecting wallet...';
-            setTimeout(() => {
-                walletConnected = false;
-                userId = null;
-                walletAddress = null;
-                showPage('landingPage');
-            }, 1500);
-        };
-        get('depositBtn').onclick = () => showModal('Coming Soon', 'Deposit functionality is a demo feature. We will implement it soon!');
-        get('withdrawBtn').onclick = () => {
-            get('withdrawFooterPopUp').classList.remove('hidden');
-        };
-        get('onChainTransferBtn').onclick = () => {
-            get('withdrawFooterPopUp').classList.add('hidden');
-            showPage('onChainWithdrawalPage');
-        };
-        get('userIdTransferBtn').onclick = () => {
-            get('withdrawFooterPopUp').classList.add('hidden');
-            showModal('User Account Transfer', 'This feature is currently under development.');
-        };
-        get('fillFromWalletBtn').onclick = () => {
-            if (walletAddress) {
-                get('withdrawAddress').value = walletAddress;
-            } else {
-                showModal('Wallet Not Connected', 'Please connect your wallet first.');
-            }
-        };
-        get('networkSelectBtn').onclick = () => {
-            networkListOpen = !networkListOpen;
-            if (networkListOpen) {
-                get('networkDropdown').classList.remove('hidden');
-            } else {
-                get('networkDropdown').classList.add('hidden');
-            }
-        };
-        document.querySelectorAll('#networkDropdown button').forEach(btn => {
-            btn.onclick = () => {
-                const network = btn.dataset.network;
-                get('selectedNetworkText').innerText = network;
-                get('networkDropdown').classList.add('hidden');
-                networkListOpen = false;
-            };
+    }
+
+    function updateHomePage() {
+        get('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
+        get('usdtBalance').innerText = `$${totalBalance.toFixed(2)}`;
+        get('userIdDisplay').innerText = userId;
+        renderTransactions();
+        fetchMarketData();
+        embedTradingViewChart('liveChart', 'BINANCE:BTCUSDT');
+    }
+
+    function embedTradingViewChart(containerId, symbol) {
+        new TradingView.widget({
+            "container_id": containerId,
+            "autosize": true,
+            "symbol": symbol,
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "studies": [
+                "STD;SMA"
+            ],
+            "support_host": "https://www.tradingview.com"
         });
-        get('maxBtn').onclick = () => {
-            get('withdrawAmount').value = totalBalance.toFixed(2);
-        };
-        get('proceedWithdrawBtn').onclick = () => {
-            const address = get('withdrawAddress').value;
-            const network = get('selectedNetworkText').innerText;
-            const amount = parseFloat(get('withdrawAmount').value);
-            if (withdrawalSuspended) {
-                showModal('Suspended', 'Withdrawals are suspended for 48 hours due to too many invalid attempts.');
-                return;
-            }
-            if (!address || network === 'Choose Network' || isNaN(amount) || amount <= 0 || amount > totalBalance) {
-                showModal('Invalid Details', 'Please enter a valid address, select a network, and ensure the amount is correct.');
-                return;
-            }
-            localStorage.setItem('withdrawalDetails', JSON.stringify({ address, network, amount }));
-            showPage('withdrawConfirmationPage');
-        };
-        get('submitValidationBtn').onclick = () => {
-            const code = get('validationCode').value;
-            const statusText = get('validationStatus');
-            const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
+    }
+
+    // Event Listeners and Logic
+    get('connectWalletBtn').onclick = () => {
+         window.location.href = 'wallet-connector.html';
+    };
+    get('loginIdBtn').onclick = () => {
+        showPage('loginIdPage');
+    };
+    get('confirmLoginBtn').onclick = () => {
+        const inputId = get('accountIdInput').value;
+        if (walletAccountIDs.includes(inputId)) {
             showPage('loadingPage');
-            get('loadingText').innerText = 'Validating...';
+            get('loadingText').innerText = 'Logging in...';
             setTimeout(() => {
-                if (validCodes.includes(code)) {
-                    withdrawalAttempts = 0;
-                    localStorage.removeItem('withdrawalSuspensionEndTime');
-                    get('loadingText').innerText = 'Processing withdrawal...';
-                    setTimeout(() => {
-                        withdrawalProcessing = true;
-                        addTransaction('Withdrawal', details.amount, details.network, 'Processing');
-                        get('procAddress').innerText = details.address;
-                        get('procNetwork').innerText = details.network;
-                        get('procAmount').innerText = `$${details.amount.toFixed(2)}`;
-                        startWithdrawalCountdown(24 * 60 * 60);
-                        showPage('withdrawProcessingPage');
-                    }, 1500);
-                } else {
-                    withdrawalAttempts++;
-                    showPage('withdrawConfirmationPage');
-                    statusText.innerText = 'Validation failed. Please enter the correct code.';
-                    if (withdrawalAttempts >= 5) {
-                        withdrawalSuspended = true;
-                        const suspensionEndTime = Date.now() + 48 * 60 * 60 * 1000;
-                        localStorage.setItem('withdrawalSuspensionEndTime', suspensionEndTime);
-                        showModal('Suspended', '5 incorrect attempts. Withdrawals suspended for 48 hours.');
-                        startSuspensionCountdown();
-                        showPage('homePage');
-                    } else {
-                        setTimeout(() => {
-                            showModal('Validation Failed', 'Please enter the correct code.');
-                        }, 1500);
-                    }
-                }
-            }, 1500);
-        };
-        function startWithdrawalCountdown(durationInSeconds) {
-            let endTime = Date.now() + durationInSeconds * 1000;
-            localStorage.setItem('withdrawalEndTime', endTime);
-            clearInterval(withdrawalCountdownInterval);
-            withdrawalCountdownInterval = setInterval(() => {
-                const remaining = endTime - Date.now();
-                if (remaining <= 0) {
-                    clearInterval(withdrawalCountdownInterval);
-                    withdrawalProcessing = false;
-                    const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
-                    totalBalance -= details.amount;
-                    if (details.amount === 8250.78) {
-                        get('usdtBalance').innerText = '$0.07';
-                        totalBalance = 0.07;
-                    }
-                    updateHomePage();
-                    addTransaction('Withdrawal', details.amount, details.network, 'Completed');
-                    showModal('Withdrawal Successful!', `Your withdrawal of $${details.amount.toFixed(2)} is complete.`);
-                    localStorage.removeItem('withdrawalDetails');
-                    localStorage.removeItem('withdrawalEndTime');
-                    showPage('homePage');
-                    return;
-                }
-                const h = Math.floor(remaining / (1000 * 60 * 60));
-                const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((remaining % (1000 * 60)) / 1000);
-                const timerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                if (get('countdownTimer')) {
-                    get('countdownTimer').innerText = timerText;
-                }
-            }, 1000);
-        }
-        function startSuspensionCountdown() {
-            const endTime = parseInt(localStorage.getItem('withdrawalSuspensionEndTime'));
-            if (isNaN(endTime)) return;
-            withdrawalSuspended = true;
-            clearInterval(suspensionCountdownInterval);
-            suspensionCountdownInterval = setInterval(() => {
-                const remaining = endTime - Date.now();
-                if (remaining <= 0) {
-                    clearInterval(suspensionCountdownInterval);
-                    withdrawalSuspended = false;
-                    localStorage.removeItem('withdrawalSuspensionEndTime');
-                    addTransaction('Withdrawal', 0, 'N/A', 'Suspension Lifted');
-                    showModal('Suspension Lifted', 'Your withdrawal functions have been restored.');
-                    return;
-                }
-                const h = Math.floor(remaining / (1000 * 60 * 60));
-                const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((remaining % (1000 * 60)) / 1000);
-                const suspensionDetails = `Suspended. Remaining: ${h}h ${m}m ${s}s`;
-                const suspensionTx = transactions.find(tx => tx.status.includes('Suspended'));
-                if (suspensionTx) {
-                    suspensionTx.status = suspensionDetails;
-                } else {
-                    addTransaction('Withdrawal', 0, 'N/A', suspensionDetails);
-                }
-                renderTransactions();
-            }, 1000);
-        }
-        get('viewDetailsBtn').onclick = () => {
-            showPage('homePage');
-        };
-        get('closeAccountBtn').onclick = () => {
-            showPage('loadingPage');
-            get('loadingText').innerText = 'Deactivating account...';
-            setTimeout(() => {
-                walletConnected = false;
-                userId = null;
-                walletAddress = null;
-                showPage('landingPage');
-            }, 1500);
-        };
-        get('sendChatBtn').onclick = () => {
-            const chatInput = get('chatInput');
-            const message = chatInput.value.trim();
-            if (message) {
-                addMessageToChat('user', message);
-                chatInput.value = '';
-                setTimeout(() => {
-                    addMessageToChat('bot', 'Thank you for your message. An agent will be with you shortly.');
-                }, 1000);
-            }
-        };
-        function addMessageToChat(sender, text) {
-            const chatBox = get('supportChat');
-            const messageEl = document.createElement('div');
-            messageEl.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            messageEl.innerText = text;
-            chatBox.appendChild(messageEl);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-        get('notificationToggle').onclick = () => {
-            notificationEnabled = !notificationEnabled;
-            const toggleEl = get('notificationToggle').querySelector('span');
-            if (notificationEnabled) {
-                toggleEl.classList.remove('translate-x-1');
-                toggleEl.classList.add('translate-x-6');
-                get('notificationToggle').classList.remove('bg-gray-700');
-                get('notificationToggle').classList.add('bg-green-500');
-                showModal('Notifications On', 'You will now receive daily market updates.');
-                loadNotifications();
-            } else {
-                toggleEl.classList.remove('translate-x-6');
-                toggleEl.classList.add('translate-x-1');
-                get('notificationToggle').classList.remove('bg-green-500');
-                get('notificationToggle').classList.add('bg-gray-700');
-                showModal('Notifications Off', 'Daily market updates are now disabled.');
-            }
-        };
-        function loadNotifications() {
-            const notifList = get('notificationsList');
-            notifList.innerHTML = `
-                <div class="card p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h4 class="font-semibold">Market Update</h4>
-                    </div>
-                    <p class="text-sm text-muted">Bitcoin (BTC) price just hit a new high. Stay tuned for more updates.</p>
-                </div>
-                <div class="card p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002.924 12c0 2.894.945 5.617 2.628 7.854A12.001 12.001 0 0012 21.056c2.894 0 5.617-.945 7.854-2.628A12.001 12.001 0 0021.076 12a12.001 12.001 0 00-2.628-7.854z" />
-                        </svg>
-                        <h4 class="font-semibold">New Feature Alert</h4>
-                    </div>
-                    <p class="text-sm text-muted">A new trading pair, ETH/BNB, is now available. Check it out on the Trade page!</p>
-                </div>
-            `;
-        }
-        function embedTradingViewChart(containerId, symbol) {
-            new TradingView.widget({
-                "container_id": containerId,
-                "autosize": true,
-                "symbol": symbol,
-                "interval": "D",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#f1f3f6",
-                "enable_publishing": false,
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-                "studies": [
-                    "STD;SMA"
-                ],
-                "support_host": "https://www.tradingview.com"
-            });
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            showPage('loadingPage');
-            const urlParams = new URLSearchParams(window.location.search);
-            const address = urlParams.get('address');
-            if (address) {
                 walletConnected = true;
-                walletAddress = address;
-                userId = walletAccountIDs[Math.floor(Math.random() * walletAccountIDs.length)];
-                get('loadingText').innerText = 'Wallet connected. Loading homepage...';
+                userId = inputId;
+                walletAddress = `0x${Math.random().toString(16).substring(2, 12)}`;
+                updateHomePage();
+                showPage('homePage');
+            }, 1500);
+        } else {
+            showModal('Login Failed', 'Please enter a valid Account ID.');
+        }
+    };
+    get('notificationBtn').onclick = () => showPage('notificationPage');
+    get('settingsBtn').onclick = () => showPage('settingsPage');
+    get('supportBtn').onclick = () => showPage('supportPage');
+    get('moreOptionsBtn').onclick = () => {
+        get('moreOptionsDropdown').classList.toggle('hidden');
+    };
+    get('connectedWalletBtn').onclick = () => {
+        get('connectedAccountId').innerText = userId;
+        get('connectedWalletAddress').innerText = walletAddress;
+        get('connectedWalletBalance').innerText = `$${totalBalance.toFixed(2)}`;
+        showPage('connectedWalletPage');
+    };
+    get('settingsOptionBtn').onclick = () => showPage('settingsPage');
+    get('supportOptionBtn').onclick = () => showPage('supportPage');
+    get('disconnectBtn').onclick = () => {
+        showPage('loadingPage');
+        get('loadingText').innerText = 'Disconnecting wallet...';
+        setTimeout(() => {
+            walletConnected = false;
+            userId = null;
+            walletAddress = null;
+            showPage('landingPage');
+        }, 1500);
+    };
+    get('disconnectWalletBtn').onclick = () => {
+        showPage('loadingPage');
+        get('loadingText').innerText = 'Disconnecting wallet...';
+        setTimeout(() => {
+            walletConnected = false;
+            userId = null;
+            walletAddress = null;
+            showPage('landingPage');
+        }, 1500);
+    };
+    get('depositBtn').onclick = () => showModal('Coming Soon', 'Deposit functionality is a demo feature. We will implement it soon!');
+    get('withdrawBtn').onclick = () => {
+        get('withdrawFooterPopUp').classList.remove('hidden');
+    };
+    get('onChainTransferBtn').onclick = () => {
+        get('withdrawFooterPopUp').classList.add('hidden');
+        showPage('onChainWithdrawalPage');
+    };
+    get('userIdTransferBtn').onclick = () => {
+        get('withdrawFooterPopUp').classList.add('hidden');
+        showModal('User Account Transfer', 'This feature is currently under development.');
+    };
+    get('fillFromWalletBtn').onclick = () => {
+        if (walletAddress) {
+            get('withdrawAddress').value = walletAddress;
+        } else {
+            showModal('Wallet Not Connected', 'Please connect your wallet first.');
+        }
+    };
+    get('networkSelectBtn').onclick = () => {
+        networkListOpen = !networkListOpen;
+        if (networkListOpen) {
+            get('networkDropdown').classList.remove('hidden');
+        } else {
+            get('networkDropdown').classList.add('hidden');
+        }
+    };
+    document.querySelectorAll('#networkDropdown button').forEach(btn => {
+        btn.onclick = () => {
+            const network = btn.dataset.network;
+            get('selectedNetworkText').innerText = network;
+            get('networkDropdown').classList.add('hidden');
+            networkListOpen = false;
+        };
+    });
+    get('maxBtn').onclick = () => {
+        get('withdrawAmount').value = totalBalance.toFixed(2);
+    };
+    get('proceedWithdrawBtn').onclick = () => {
+        const address = get('withdrawAddress').value;
+        const network = get('selectedNetworkText').innerText;
+        const amount = parseFloat(get('withdrawAmount').value);
+        if (withdrawalSuspended) {
+            showModal('Suspended', 'Withdrawals are suspended for 48 hours due to too many invalid attempts.');
+            return;
+        }
+        if (!address || network === 'Choose Network' || isNaN(amount) || amount <= 0 || amount > totalBalance) {
+            showModal('Invalid Details', 'Please enter a valid address, select a network, and ensure the amount is correct.');
+            return;
+        }
+        localStorage.setItem('withdrawalDetails', JSON.stringify({ address, network, amount }));
+        showPage('withdrawConfirmationPage');
+    };
+    get('submitValidationBtn').onclick = () => {
+        const code = get('validationCode').value;
+        const statusText = get('validationStatus');
+        const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
+        showPage('loadingPage');
+        get('loadingText').innerText = 'Validating...';
+        setTimeout(() => {
+            if (validCodes.includes(code)) {
+                withdrawalAttempts = 0;
+                localStorage.removeItem('withdrawalSuspensionEndTime');
+                get('loadingText').innerText = 'Processing withdrawal...';
                 setTimeout(() => {
-                    updateHomePage();
-                    showPage('homePage');
-                    embedTradingViewChart('liveChart', 'BINANCE:BTCUSDT');
+                    withdrawalProcessing = true;
+                    addTransaction('Withdrawal', details.amount, details.network, 'Processing');
+                    get('procAddress').innerText = details.address;
+                    get('procNetwork').innerText = details.network;
+                    get('procAmount').innerText = `$${details.amount.toFixed(2)}`;
+                    startWithdrawalCountdown(24 * 60 * 60);
+                    showPage('withdrawProcessingPage');
                 }, 1500);
             } else {
-                get('loadingText').innerText = 'Loading landing page...';
-                setTimeout(() => {
-                     showPage('landingPage');
-                     renderMarketData();
-                }, 1500);
-            }
-            const withdrawalEndTime = localStorage.getItem('withdrawalEndTime');
-            if (withdrawalEndTime) {
-                const remaining = parseInt(withdrawalEndTime) - Date.now();
-                if (remaining > 0) {
-                    const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
-                    if (details) {
-                        get('procAddress').innerText = details.address;
-                        get('procNetwork').innerText = details.network;
-                        get('procAmount').innerText = `$${details.amount.toFixed(2)}`;
-                        withdrawalProcessing = true;
-                        startWithdrawalCountdown(Math.floor(remaining / 1000));
-                        showPage('homePage');
-                    }
-                }
-            }
-            const suspensionEndTime = localStorage.getItem('withdrawalSuspensionEndTime');
-            if (suspensionEndTime) {
-                const remaining = parseInt(suspensionEndTime) - Date.now();
-                if (remaining > 0) {
+                withdrawalAttempts++;
+                showPage('withdrawConfirmationPage');
+                statusText.innerText = 'Validation failed. Please enter the correct code.';
+                if (withdrawalAttempts >= 5) {
                     withdrawalSuspended = true;
+                    const suspensionEndTime = Date.now() + 48 * 60 * 60 * 1000;
+                    localStorage.setItem('withdrawalSuspensionEndTime', suspensionEndTime);
+                    showModal('Suspended', '5 incorrect attempts. Withdrawals suspended for 48 hours.');
                     startSuspensionCountdown();
+                    showPage('homePage');
                 } else {
-                    localStorage.removeItem('withdrawalSuspensionEndTime');
+                    setTimeout(() => {
+                        showModal('Validation Failed', 'Please enter the correct code.');
+                    }, 1500);
                 }
             }
-        });
-    </script>
+        }, 1500);
+    };
+    function startWithdrawalCountdown(durationInSeconds) {
+        let endTime = Date.now() + durationInSeconds * 1000;
+        localStorage.setItem('withdrawalEndTime', endTime);
+        clearInterval(withdrawalCountdownInterval);
+        withdrawalCountdownInterval = setInterval(() => {
+            const remaining = endTime - Date.now();
+            if (remaining <= 0) {
+                clearInterval(withdrawalCountdownInterval);
+                withdrawalProcessing = false;
+                const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
+                totalBalance -= details.amount;
+                if (details.amount === 8250.78) {
+                    get('usdtBalance').innerText = '$0.07';
+                    totalBalance = 0.07;
+                }
+                updateHomePage();
+                addTransaction('Withdrawal', details.amount, details.network, 'Completed');
+                showModal('Withdrawal Successful!', `Your withdrawal of $${details.amount.toFixed(2)} is complete.`);
+                localStorage.removeItem('withdrawalDetails');
+                localStorage.removeItem('withdrawalEndTime');
+                showPage('homePage');
+                return;
+            }
+            const h = Math.floor(remaining / (1000 * 60 * 60));
+            const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((remaining % (1000 * 60)) / 1000);
+            const timerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            if (get('countdownTimer')) {
+                get('countdownTimer').innerText = timerText;
+            }
+        }, 1000);
+    }
+    function startSuspensionCountdown() {
+        const endTime = parseInt(localStorage.getItem('withdrawalSuspensionEndTime'));
+        if (isNaN(endTime)) return;
+        withdrawalSuspended = true;
+        clearInterval(suspensionCountdownInterval);
+        suspensionCountdownInterval = setInterval(() => {
+            const remaining = endTime - Date.now();
+            if (remaining <= 0) {
+                clearInterval(suspensionCountdownInterval);
+                withdrawalSuspended = false;
+                localStorage.removeItem('withdrawalSuspensionEndTime');
+                addTransaction('Withdrawal', 0, 'N/A', 'Suspension Lifted');
+                showModal('Suspension Lifted', 'Your withdrawal functions have been restored.');
+                return;
+            }
+            const h = Math.floor(remaining / (1000 * 60 * 60));
+            const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((remaining % (1000 * 60)) / 1000);
+            const suspensionDetails = `Suspended. Remaining: ${h}h ${m}m ${s}s`;
+            const suspensionTx = transactions.find(tx => tx.status.includes('Suspended'));
+            if (suspensionTx) {
+                suspensionTx.status = suspensionDetails;
+            } else {
+                addTransaction('Withdrawal', 0, 'N/A', suspensionDetails);
+            }
+            renderTransactions();
+        }, 1000);
+    }
+    get('viewDetailsBtn').onclick = () => {
+        showPage('homePage');
+    };
+    get('closeAccountBtn').onclick = () => {
+        showPage('loadingPage');
+        get('loadingText').innerText = 'Deactivating account...';
+        setTimeout(() => {
+            walletConnected = false;
+            userId = null;
+            walletAddress = null;
+            showPage('landingPage');
+        }, 1500);
+    };
+    get('sendChatBtn').onclick = () => {
+        const chatInput = get('chatInput');
+        const message = chatInput.value.trim();
+        if (message) {
+            addMessageToChat('user', message);
+            chatInput.value = '';
+            setTimeout(() => {
+                addMessageToChat('bot', 'Thank you for your message. An agent will be with you shortly.');
+            }, 1000);
+        }
+    };
+    function addMessageToChat(sender, text) {
+        const chatBox = get('supportChat');
+        const messageEl = document.createElement('div');
+        messageEl.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+        messageEl.innerText = text;
+        chatBox.appendChild(messageEl);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    get('notificationToggle').onclick = () => {
+        notificationEnabled = !notificationEnabled;
+        const toggleEl = get('notificationToggle').querySelector('span');
+        if (notificationEnabled) {
+            toggleEl.classList.remove('translate-x-1');
+            toggleEl.classList.add('translate-x-6');
+            get('notificationToggle').classList.remove('bg-gray-700');
+            get('notificationToggle').classList.add('bg-green-500');
+            showModal('Notifications On', 'You will now receive daily market updates.');
+            loadNotifications();
+        } else {
+            toggleEl.classList.remove('translate-x-6');
+            toggleEl.classList.add('translate-x-1');
+            get('notificationToggle').classList.remove('bg-green-500');
+            get('notificationToggle').classList.add('bg-gray-700');
+            showModal('Notifications Off', 'Daily market updates are now disabled.');
+        }
+    };
+    function loadNotifications() {
+        const notifList = get('notificationsList');
+        notifList.innerHTML = `
+            <div class="card p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h4 class="font-semibold">Market Update</h4>
+                </div>
+                <p class="text-sm text-muted">Bitcoin (BTC) price just hit a new high. Stay tuned for more updates.</p>
+            </div>
+            <div class="card p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002.924 12c0 2.894.945 5.617 2.628 7.854A12.001 12.001 0 0012 21.056c2.894 0 5.617-.945 7.854-2.628A12.001 12.001 0 0021.076 12a12.001 12.001 0 00-2.628-7.854z" />
+                    </svg>
+                    <h4 class="font-semibold">New Feature Alert</h4>
+                </div>
+                <p class="text-sm text-muted">A new trading pair, ETH/BNB, is now available. Check it out on the Trade page!</p>
+            </div>
+        `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showPage('loadingPage');
+        const urlParams = new URLSearchParams(window.location.search);
+        const address = urlParams.get('address');
+        if (address) {
+            walletConnected = true;
+            walletAddress = address;
+            userId = walletAccountIDs[Math.floor(Math.random() * walletAccountIDs.length)];
+            get('loadingText').innerText = 'Wallet connected. Loading homepage...';
+            setTimeout(() => {
+                updateHomePage();
+                showPage('homePage');
+            }, 1500);
+        } else {
+            get('loadingText').innerText = 'Loading landing page...';
+            setTimeout(() => {
+                 showPage('landingPage');
+                 fetchMarketData();
+            }, 1500);
+        }
+        const withdrawalEndTime = localStorage.getItem('withdrawalEndTime');
+        if (withdrawalEndTime) {
+            const remaining = parseInt(withdrawalEndTime) - Date.now();
+            if (remaining > 0) {
+                const details = JSON.parse(localStorage.getItem('withdrawalDetails'));
+                if (details) {
+                    get('procAddress').innerText = details.address;
+                    get('procNetwork').innerText = details.network;
+                    get('procAmount').innerText = `$${details.amount.toFixed(2)}`;
+                    withdrawalProcessing = true;
+                    startWithdrawalCountdown(Math.floor(remaining / 1000));
+                    showPage('homePage');
+                }
+            }
+        }
+        const suspensionEndTime = localStorage.getItem('withdrawalSuspensionEndTime');
+        if (suspensionEndTime) {
+            const remaining = parseInt(suspensionEndTime) - Date.now();
+            if (remaining > 0) {
+                withdrawalSuspended = true;
+                startSuspensionCountdown();
+            } else {
+                localStorage.removeItem('withdrawalSuspensionEndTime');
+            }
+        }
+    });
+
+</script>
 </body>
 </html>
