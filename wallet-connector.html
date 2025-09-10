@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Wallet Connect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 480px;
+        }
+        .card {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container mx-auto card space-y-6">
+        <h1 class="text-3xl font-bold text-center text-white">Connect Your Wallet</h1>
+        <p class="text-center text-gray-400">Choose a method to connect and explore your blockchain data.</p>
+
+        <div class="space-y-4">
+            <button id="connectWalletBtn" class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300">
+                Connect Wallet
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <p class="text-center text-gray-400">--- or ---</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <input id="manualAddressInput" type="text" placeholder="Enter wallet address" class="flex-grow px-4 py-3 bg-gray-700 text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="manualConnectBtn" class="flex-shrink-0 px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg shadow-md transition-all duration-300">
+                    Connect Manually
+                </button>
+            </div>
+        </div>
+
+        <div id="walletInfoSection" class="hidden mt-6 bg-gray-800 p-4 rounded-lg space-y-3">
+            <div class="flex justify-between items-center text-sm text-gray-400">
+                <span>Status:</span>
+                <span id="connectionStatus" class="font-medium text-green-400">Connected</span>
+            </div>
+            <div class="flex justify-between items-center text-sm text-gray-400">
+                <span>Address:</span>
+                <span id="walletAddress" class="font-medium text-gray-200 truncate"></span>
+            </div>
+            <div class="flex justify-between items-center text-sm text-gray-400">
+                <span>Network:</span>
+                <span id="walletNetwork" class="font-medium text-gray-200"></span>
+            </div>
+            <div class="flex justify-between items-center text-sm text-gray-400">
+                <span>Balance:</span>
+                <span id="walletBalance" class="font-medium text-gray-200"></span>
+            </div>
+            <button id="disconnectBtn" class="w-full mt-4 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300">
+                Disconnect
+            </button>
+        </div>
+
+        <div id="statusMessage" class="text-center mt-4 text-sm text-gray-400"></div>
+
+        <div id="customModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-800 card p-6 text-center space-y-4">
+                <h3 id="modalTitle" class="text-lg font-bold text-white"></h3>
+                <p id="modalMessage" class="text-gray-300"></p>
+                <button id="modalConfirmBtn" class="py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/index.min.js"></script>
+
+    <script>
+        // NOTE: In a real-world application, these API keys should be stored securely on a server.
+        const INFURA_ID = 'c35d1ef971da479b918c9900134867d4';
+        
+        // Get DOM elements
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const manualConnectBtn = document.getElementById('manualConnectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const manualAddressInput = document.getElementById('manualAddressInput');
+        const walletInfoSection = document.getElementById('walletInfoSection');
+        const walletAddressElem = document.getElementById('walletAddress');
+        const walletNetworkElem = document.getElementById('walletNetwork');
+        const walletBalanceElem = document.getElementById('walletBalance');
+        const statusMessageElem = document.getElementById('statusMessage');
+        const customModal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+        let web3;
+        let provider;
+        let web3Modal;
+        let accounts;
+
+        // Function to show the custom modal
+        function showModal(title, message) {
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+            customModal.classList.remove('hidden');
+        }
+
+        // Function to hide the custom modal
+        function hideModal() {
+            customModal.classList.add('hidden');
+        }
+
+        // Initialize Web3Modal
+        const providerOptions = {
+            injected: {
+                display: {
+                    logo: 'https://web3modal.com/images/providers/injected.svg',
+                    name: 'Injected',
+                    description: 'Connect with the provider in your Browser',
+                },
+                package: null
+            },
+            walletconnect: {
+                package: WalletConnectProvider.default,
+                options: {
+                    infuraId: INFURA_ID,
+                },
+            },
+        };
+
+        async function init() {
+            try {
+                web3Modal = new Web3Modal.default({
+                    network: "mainnet",
+                    cacheProvider: true,
+                    providerOptions,
+                    disableInjectedProvider: false,
+                });
+            } catch (error) {
+                console.error("Could not initialize Web3Modal", error);
+                statusMessageElem.innerText = "Error: Could not initialize Web3Modal.";
+            }
+        }
+
+        // Connect wallet function
+        async function connectWallet() {
+            try {
+                statusMessageElem.innerText = "Connecting...";
+                provider = await web3Modal.connect();
+
+                web3 = new Web3(provider);
+                accounts = await web3.eth.getAccounts();
+                
+                // Show a confirmation note for the user
+                showModal("Connection Successful", `Wallet connected with address: ${accounts[0]}.`);
+                
+                await displayWalletInfo(accounts[0], web3);
+                statusMessageElem.innerText = "Wallet successfully connected! Redirecting...";
+
+                // Redirect to the main app with the address as a parameter
+                setTimeout(() => {
+                    window.location.href = `index.html?address=${accounts[0]}`;
+                }, 10000); // 10-second loading simulation
+
+            } catch (error) {
+                console.error("Could not get a wallet connection", error);
+                if (error.message === "User closed modal") {
+                    statusMessageElem.innerText = "Connection was canceled.";
+                } else {
+                    statusMessageElem.innerText = "Connection failed. Please try again.";
+                }
+            }
+        }
+
+        // Manual connect function
+        async function manualConnect() {
+            const address = manualAddressInput.value.trim();
+            if (!address) {
+                showModal("Invalid Address", "Please enter a valid wallet address.");
+                return;
+            }
+            if (!Web3.utils.isAddress(address)) {
+                showModal("Invalid Address", "The address format is invalid. Please check and try again.");
+                return;
+            }
+            
+            // For manual connection, we create a Web3 instance with a public RPC provider
+            try {
+                statusMessageElem.innerText = "Connecting manually...";
+                web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${INFURA_ID}`));
+                await displayWalletInfo(address, web3);
+                statusMessageElem.innerText = "Manually connected to public mainnet. Redirecting...";
+
+                // Redirect to the main app with the address as a parameter
+                setTimeout(() => {
+                    window.location.href = `index.html?address=${address}`;
+                }, 10000); // 10-second loading simulation
+
+            } catch (error) {
+                console.error("Manual connection failed", error);
+                statusMessageElem.innerText = "Manual connection failed. Please check the address and network.";
+            }
+        }
+
+        // Function to fetch and display wallet information
+        async function displayWalletInfo(address, web3Instance) {
+            try {
+                // Fetch native token balance (ETH)
+                const balanceWei = await web3Instance.eth.getBalance(address);
+                const balanceEth = web3Instance.utils.fromWei(balanceWei, 'ether');
+                
+                // Get the network name
+                const chainId = await web3Instance.eth.getChainId();
+                const networkName = getNetworkName(chainId);
+
+                walletAddressElem.innerText = address;
+                walletNetworkElem.innerText = networkName;
+                walletBalanceElem.innerText = `${parseFloat(balanceEth).toFixed(4)} ETH`;
+                
+                // Show the info section and hide connect buttons
+                walletInfoSection.classList.remove('hidden');
+                connectWalletBtn.style.display = 'none';
+                manualConnectBtn.style.display = 'none';
+                manualAddressInput.style.display = 'none';
+
+            } catch (error) {
+                console.error("Failed to display wallet info", error);
+                statusMessageElem.innerText = "Failed to fetch wallet details. Check the network or API key.";
+                showModal("Error", "Failed to fetch wallet details. Please try again.");
+            }
+        }
+
+        // Disconnect function
+        async function disconnectWallet() {
+            if (provider && provider.disconnect) {
+                await provider.disconnect();
+            }
+            web3Modal.clearCachedProvider();
+            
+            // Reset UI
+            walletInfoSection.classList.add('hidden');
+            connectWalletBtn.style.display = 'block';
+            manualConnectBtn.style.display = 'block';
+            manualAddressInput.style.display = 'block';
+            manualAddressInput.value = '';
+            statusMessageElem.innerText = "Disconnected.";
+        }
+
+        // Helper function to get network name from chainId
+        function getNetworkName(chainId) {
+            switch (chainId) {
+                case 1: return "Mainnet";
+                case 5: return "Goerli";
+                case 137: return "Polygon Mainnet";
+                case 56: return "Binance Smart Chain";
+                case 43114: return "Avalanche C-Chain";
+                default: return `Chain ID: ${chainId}`;
+            }
+        }
+
+        // Event listeners
+        connectWalletBtn.addEventListener('click', connectWallet);
+        manualConnectBtn.addEventListener('click', manualConnect);
+        disconnectBtn.addEventListener('click', disconnectWallet);
+        modalConfirmBtn.addEventListener('click', hideModal);
+
+        // Initial setup
+        window.addEventListener('load', async () => {
+            init();
+        });
+    </script>
+</body>
+</html>
