@@ -310,62 +310,6 @@
                 </button>
             </div>
         </div>
-<div id="deposit" class="page px-4 py-4 hidden-page space-y-4">
-        <div class="header">
-            <button class="back-btn" onclick="showPage('home')">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-            <h1 class="page-title">Deposit</h1>
-        </div>
-        <div id="deposit-step-1" class="p-4 space-y-4">
-            <input id="coinSearchInput" type="text" placeholder="Search for a coin" class="w-full px-4 py-3 rounded-xl bg-[var(--panel-2)] border border-white/10 focus:outline-none focus:border-[var(--brand)] transition-colors" aria-label="Search for a coin">
-            <div id="coinList" class="space-y-2 mt-4 max-h-[60vh] overflow-y-auto">
-                <div class="text-sm text-center text-[var(--muted)] py-4">Loading coins...</div>
-            </div>
-        </div>
-
-        <div id="deposit-step-2" class="hidden p-4 space-y-4">
-            <div class="flex items-center gap-3">
-                <button onclick="window.showDepositStep(1)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to coin list">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h2 class="text-xl font-bold">Select Network</h2>
-            </div>
-            <div id="selectedCoinInfo" class="rounded-xl p-4 bg-[var(--panel)] flex items-center gap-4"></div>
-            <div class="rounded-xl p-4 bg-[var(--panel)]">
-                <div class="font-semibold mb-2">Available Networks</div>
-                <div class="space-y-3" id="networkList"></div>
-            </div>
-        </div>
-
-        <div id="deposit-step-3" class="hidden p-4 space-y-4 text-center">
-            <div class="flex items-center gap-3">
-                <button onclick="window.showDepositStep(2)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to network selection">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h2 class="text-xl font-bold">Deposit Address</h2>
-            </div>
-            <div class="bg-[var(--panel)] rounded-xl p-6">
-                <div id="qrCodeContainer" class="p-4 bg-white rounded-lg inline-block"></div>
-                <div class="text-xs text-[var(--muted)] mt-4">Selected Network</div>
-                <div id="selectedNetworkInfo" class="text-sm font-semibold"></div>
-                <div id="depositAddressText" class="break-all font-mono text-xs mt-1"></div>
-                <p class="safe-note mt-4">Only send <span id="depositCoinSymbol"></span> to this address. Sending other assets may result in permanent loss.</p>
-                <button onclick="window.copyAddress()" class="btn-ghost mt-4 w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy Address
-                </button>
-            </div>
-        </div>
 
         <div id="withdrawFooterPopUp" class="pop-up-footer hidden">
             <div class="p-4 text-center">
@@ -589,6 +533,65 @@
                     <div class="text-center text-muted">Loading market data...</div>
                 </div>
             </div>
+
+               <div id="deposit" class="page px-4 py-4 hidden-page space-y-4">
+    <div class="header">
+        <button class="back-btn" onclick="showPage('homePage')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <h1 class="page-title">Deposit</h1>
+    </div>
+
+    <div id="deposit-step-1" class="p-4 space-y-4">
+        <input id="coinSearchInput" type="text" placeholder="Search for a coin" class="w-full px-4 py-3 rounded-xl bg-[var(--panel-2)] border border-white/10 focus:outline-none focus:border-[var(--brand)] transition-colors" aria-label="Search for a coin">
+        <div id="coinList" class="space-y-2 mt-4 max-h-[60vh] overflow-y-auto">
+            <div class="text-sm text-center text-[var(--muted)] py-4">Loading coins...</div>
+        </div>
+    </div>
+
+    <div id="deposit-step-2" class="hidden p-4 space-y-4">
+        <div class="flex items-center gap-3">
+            <button onclick="showDepositStep(1)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to coin list">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <h2 class="text-xl font-bold">Select Network</h2>
+        </div>
+        <div id="selectedCoinInfo" class="rounded-xl p-4 bg-[var(--panel)] flex items-center gap-4"></div>
+        <div class="rounded-xl p-4 bg-[var(--panel)]">
+            <div class="font-semibold mb-2">Available Networks</div>
+            <div class="space-y-3" id="networkList"></div>
+        </div>
+    </div>
+
+    <div id="deposit-step-3" class="hidden p-4 space-y-4 text-center">
+        <div class="flex items-center gap-3">
+            <button onclick="showDepositStep(2)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to network selection">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <h2 class="text-xl font-bold">Deposit Address</h2>
+        </div>
+        <div class="bg-[var(--panel)] rounded-xl p-6">
+            <div id="qrCodeContainer" class="p-4 bg-white rounded-lg inline-block"></div>
+            <div class="text-xs text-[var(--muted)] mt-4">Selected Network</div>
+            <div id="selectedNetworkInfo" class="text-sm font-semibold"></div>
+            <div id="depositAddressText" class="break-all font-mono text-xs mt-1"></div>
+            <p class="safe-note mt-4">Only send <span id="depositCoinSymbol"></span> to this address. Sending other assets may result in permanent loss.</p>
+            <button onclick="copyAddress()" class="btn-ghost mt-4 w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy Address
+            </button>
+        </div>
+    </div>
+    </div>
             <div class="footer">
                 <button class="flex flex-col items-center text-gray-400" onclick="showPage('homePage')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 9v9a2 2 0 002 2h14a2 2 0 002-2v-9zM7 20v-6h10v6z" /></svg>
@@ -642,8 +645,7 @@
             <button id="modalCloseBtn" class="btn-primary">OK</button>
         </div>
     </div>
-
-<script>
+  <script>
     const get = id => document.getElementById(id);
 
     // State variables
@@ -671,26 +673,26 @@
 
     // Static Data
     const walletAccountIDs = [
-      "1048291756","9584207136","6732810945","4029158736","8164072395",
-      "2057819463","9174623085","3841957260","5297401863","7609284153",
-      "6184295730","8420619735","3058179624","7924810635","1839504276",
-      "6402859137","2719638504","9037482165","5823917046","4568391072",
-      "7035829146","9814062573","6729304815","2049137865","8395201746",
-      "7402853196","9527083146","6209418573","1836720954","4071869325",
-      "5286139704","7692401853","3950286174","8146925307","2093618745",
-      "6938205417","1409583276","8259370614","3105928746","9742605813",
-      "4632185097","5827049136","8714956203","6497012835","2396185740",
-      "5048731962","7836241905","6104298735","9581726403","7246093815",
-      "4308169527","8924056713","5179302468","3867205194","2795418063",
-      "9018264573","6428701953","8130529476","5987312046","7062918354",
-      "9215730846","3801526947","1468925703","8503726194","2735904816",
-      "6947213058","3019285746","9725406813","4873061925","5604897132",
-      "8462097351","2159037468","7093812645","3917408256","6245803971",
-      "8506192437","2785039146","4961702835","3059827416","7395081246",
-      "5140927386","6084219573","2895170463","9472108536","7825901463",
-      "1362059874","6058719423","8723065914","4205987136","9837012465",
-      "3675910284","5916037284","2349710856","7603489125","8152796043",
-      "4296387015","9028471356","6713094825","3589172406","1497825036"
+        "1048291756", "9584207136", "6732810945", "4029158736", "8164072395",
+        "2057819463", "9174623085", "3841957260", "5297401863", "7609284153",
+        "6184295730", "8420619735", "3058179624", "7924810635", "1839504276",
+        "6402859137", "2719638504", "9037482165", "5823917046", "4568391072",
+        "7035829146", "9814062573", "6729304815", "2049137865", "8395201746",
+        "7402853196", "9527083146", "6209418573", "1836720954", "4071869325",
+        "5286139704", "7692401853", "3950286174", "8146925307", "2093618745",
+        "6938205417", "1409583276", "8259370614", "3105928746", "9742605813",
+        "4632185097", "5827049136", "8714956203", "6497012835", "2396185740",
+        "5048731962", "7836241905", "6104298735", "9581726403", "7246093815",
+        "4308169527", "8924056713", "5179302468", "3867205194", "2795418063",
+        "9018264573", "6428701953", "8130529476", "5987312046", "7062918354",
+        "9215730846", "3801526947", "1468925703", "8503726194", "2735904816",
+        "6947213058", "3019285746", "9725406813", "4873061925", "5604897132",
+        "8462097351", "2159037468", "7093812645", "3917408256", "6245803971",
+        "8506192437", "2785039146", "4961702835", "3059827416", "7395081246",
+        "5140927386", "6084219573", "2895170463", "9472108536", "7825901463",
+        "1362059874", "6058719423", "8723065914", "4205987136", "9837012465",
+        "3675910284", "5916037284", "2349710856", "7603489125", "8152796043",
+        "4296387015", "9028471356", "6713094825", "3589172406", "1497825036"
     ];
     const validCodes = ["483921", "175064", "902718", "634285", "217509", "856430", "490127", "731694", "562803", "308417", "941256", "128374", "675820", "203519", "487960", "819432", "356701", "740528", "612947", "098135", "573864", "284691", "160738", "495260", "837514", "021693", "658407", "794135", "320586", "946172"];
     let transactions = [];
@@ -738,7 +740,7 @@
 
     function renderTransactions() {
         const container = get('transactionsList');
-        if (!container) return; // Add this check
+        if (!container) return;
         container.innerHTML = transactions.map(tx => `
             <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--card)] shadow-sm">
                 <div class="flex items-center gap-3">
@@ -796,7 +798,7 @@
                 fullMarketContainer.innerHTML = data.map(coin => {
                     const change = coin.price_change_percentage_24h_in_currency;
                     const changeColor = change > 0 ? 'text-green-500' : 'text-red-500';
-                    const isGainer = change > 5; // Example logic for gainers/losers
+                    const isGainer = change > 5;
                     const isLoser = change < -5;
                     const gainerLoserLabel = isGainer ? 'Gainers' : (isLoser ? 'Losers' : '');
 
@@ -893,15 +895,14 @@
     }
 
     function showDepositStep(step) {
-        document.getElementById('deposit-step-1').classList.add('hidden');
-        document.getElementById('deposit-step-2').classList.add('hidden');
-        document.getElementById('deposit-step-3').classList.add('hidden');
-        document.getElementById(`deposit-step-${step}`).classList.remove('hidden');
+        const steps = ['deposit-step-1', 'deposit-step-2', 'deposit-step-3'];
+        steps.forEach(s => get(s).classList.add('hidden'));
+        get(`deposit-step-${step}`).classList.remove('hidden');
     }
 
     function selectCoin(id, image, name, symbol) {
         selectedCoin = { id, image, name, symbol: symbol.toUpperCase() };
-        document.getElementById('selectedCoinInfo').innerHTML = `
+        get('selectedCoinInfo').innerHTML = `
             <img src="${selectedCoin.image}" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/1ea7fd/fff?text=?'"/>
             <div>
                 <div class="font-semibold">${selectedCoin.name}</div>
@@ -913,7 +914,7 @@
     }
 
     function renderNetworkList() {
-        const networkList = document.getElementById('networkList');
+        const networkList = get('networkList');
         networkList.innerHTML = '';
         const networkKeys = ['BTC', 'ETH', 'BNB', 'TRX'];
         networkKeys.forEach(key => {
@@ -939,21 +940,19 @@
     function selectNetwork(key) {
         const net = depositAddresses[key];
         const addr = net.address;
-        const qrContainer = document.getElementById('qrCodeContainer');
+        const qrContainer = get('qrCodeContainer');
         qrContainer.innerHTML = '';
         if (typeof QRCode !== 'undefined') {
           new QRCode(qrContainer, addr);
         }
-        document.getElementById('selectedNetworkInfo').textContent = net.network;
-        document.getElementById('depositAddressText').textContent = addr;
-        document.getElementById('depositCoinSymbol').textContent = selectedCoin.symbol;
+        get('selectedNetworkInfo').textContent = net.network;
+        get('depositAddressText').textContent = addr;
+        get('depositCoinSymbol').textContent = selectedCoin.symbol;
         showDepositStep(3);
     }
 
     function copyAddress() {
-        const addr = document.getElementById('depositAddressText').textContent;
-        // Assume window.copyText is a function that copies text to clipboard
-        // window.copyText(addr);
+        const addr = get('depositAddressText').textContent;
         navigator.clipboard.writeText(addr).then(() => {
             addTransaction('Deposit', 0, selectedCoin.symbol, 'Pending');
             showModal('Address Copied!', 'The deposit address has been copied to your clipboard.');
@@ -1149,7 +1148,7 @@
         withdrawalSuspended = true;
         clearInterval(suspensionCountdownInterval);
         suspensionCountdownInterval = setInterval(() => {
-            const remaining = endTime - Date.now();
+            const remaining = endTime - Date.9584207136();
             if (remaining <= 0) {
                 clearInterval(suspensionCountdownInterval);
                 withdrawalSuspended = false;
@@ -1246,7 +1245,7 @@
     }
 
     // New event listeners for the deposit page
-    document.getElementById('coinSearchInput').addEventListener('input', (e) => {
+    get('coinSearchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
         const filteredCoins = allCoins.filter(c =>
             c.name.toLowerCase().includes(query) || c.symbol.toLowerCase().includes(query)
@@ -1254,16 +1253,61 @@
         renderCoinList(filteredCoins);
     });
 
-    // Re-attach existing event listeners
-    document.querySelectorAll('.js-back-btn').forEach(btn => {
-        btn.addEventListener('click', () => history.back());
-    });
-    
-    // Global functions for deposit flow
-    window.startDepositFlow = startDepositFlow;
-    window.showDepositStep = showDepositStep;
-    window.selectCoin = selectCoin;
-    window.copyAddress = copyAddress;
+    get('deposit').innerHTML = `
+        <div class="header">
+            <button class="back-btn" onclick="showPage('homePage')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <h1 class="page-title">Deposit</h1>
+        </div>
+        <div id="deposit-step-1" class="p-4 space-y-4">
+            <input id="coinSearchInput" type="text" placeholder="Search for a coin" class="w-full px-4 py-3 rounded-xl bg-[var(--panel-2)] border border-white/10 focus:outline-none focus:border-[var(--brand)] transition-colors" aria-label="Search for a coin">
+            <div id="coinList" class="space-y-2 mt-4 max-h-[60vh] overflow-y-auto">
+                <div class="text-sm text-center text-[var(--muted)] py-4">Loading coins...</div>
+            </div>
+        </div>
+        <div id="deposit-step-2" class="hidden p-4 space-y-4">
+            <div class="flex items-center gap-3">
+                <button onclick="showDepositStep(1)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to coin list">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold">Select Network</h2>
+            </div>
+            <div id="selectedCoinInfo" class="rounded-xl p-4 bg-[var(--panel)] flex items-center gap-4"></div>
+            <div class="rounded-xl p-4 bg-[var(--panel)]">
+                <div class="font-semibold mb-2">Available Networks</div>
+                <div class="space-y-3" id="networkList"></div>
+            </div>
+        </div>
+        <div id="deposit-step-3" class="hidden p-4 space-y-4 text-center">
+            <div class="flex items-center gap-3">
+                <button onclick="showDepositStep(2)" class="p-2 rounded-full hover:bg-white/5" aria-label="Back to network selection">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold">Deposit Address</h2>
+            </div>
+            <div class="bg-[var(--panel)] rounded-xl p-6">
+                <div id="qrCodeContainer" class="p-4 bg-white rounded-lg inline-block"></div>
+                <div class="text-xs text-[var(--muted)] mt-4">Selected Network</div>
+                <div id="selectedNetworkInfo" class="text-sm font-semibold"></div>
+                <div id="depositAddressText" class="break-all font-mono text-xs mt-1"></div>
+                <p class="safe-note mt-4">Only send <span id="depositCoinSymbol"></span> to this address. Sending other assets may result in permanent loss.</p>
+                <button onclick="copyAddress()" class="btn-ghost mt-4 w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy Address
+                </button>
+            </div>
+        </div>
+    `;
 
     document.addEventListener('DOMContentLoaded', () => {
         showPage('loadingPage');
@@ -1314,7 +1358,6 @@
             }
         }
     });
-
-</script>
+ </script>
 </body>
 </html>
